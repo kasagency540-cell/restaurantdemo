@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="darkreader-lock">
+<title>Restaurant</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--brand:#e4002b;--accent:#e4002b;--dark:#202124;--bg:#fff;--sand:#f7f3ef;--ink:#1d1d1d;--mut:#777;--line:#e5e5e5}
+*{box-sizing:border-box;margin:0}
+body{font-family:Poppins,system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;padding-bottom:84px}
+h1,h2,h3,.logo{font-weight:700;letter-spacing:-.2px}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:20;background:#fff;color:var(--ink);box-shadow:0 1px 0 var(--line);display:flex;align-items:center;justify-content:space-between;padding:8px 16px}
+.ib{background:none;border:0;font:600 14px Poppins;cursor:pointer;color:inherit;padding:6px}
+.logo{color:var(--brand);font-size:24px;text-decoration:none;display:flex;align-items:center;gap:8px;line-height:1.1}
+.logo img{height:40px;max-width:120px;object-fit:contain}
+.cartI{position:relative;font-size:22px}
+.cartI i{position:absolute;top:-2px;right:-4px;background:var(--brand);color:#fff;border-radius:99px;font:700 11px Poppins;font-style:normal;padding:1px 6px}
+#nav{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-top:1px solid var(--line);box-shadow:0 8px 18px #0003}
+#nav.on{display:block}
+#nav a{display:block;padding:14px 20px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+.order{text-align:center;padding:34px 16px 30px}
+.order h1{font-size:clamp(32px,7vw,52px);line-height:1.1;margin-bottom:18px;color:var(--ink)}
+.btn{display:block;width:100%;max-width:340px;margin:0 auto;background:var(--accent);color:#fff;border:0;border-radius:14px;padding:15px 24px;font:700 18px Poppins,sans-serif;cursor:pointer;text-align:center;box-shadow:0 4px 0 #a80022}
+.btn:hover{filter:brightness(.96)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #a80022}
+.car{position:relative}
+.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.slides::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:start;aspect-ratio:16/8;min-height:170px;background:var(--dark) center/cover;color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 7%}
+.slide h2{font-size:clamp(30px,7vw,60px);line-height:1.05;color:#fff}
+.slide p{font-weight:500;font-size:clamp(14px,3vw,22px)}
+.dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:#fff8}
+.dots i.on{background:#fff}
+#menu,#about,#contact{scroll-margin-top:64px}
+.sh{display:flex;align-items:center;gap:14px;margin:30px 0 16px}
+.sh h2{font-size:22px;white-space:nowrap;color:var(--ink)}
+.sh::after{content:"";flex:1;height:2px;background:var(--line)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{border:1px solid var(--line);border-radius:16px;overflow:hidden;text-align:center;background:#fff;display:flex;flex-direction:column}
+.card .img{aspect-ratio:16/10;background:#1b1b1b center/cover;display:grid;place-items:center;font-size:52px}
+.card h3{font-size:15px;font-weight:600;padding:12px 8px 4px}
+.card p{font-size:12px;color:var(--mut);padding:0 10px;flex:1}
+.pr{padding:8px 0 4px;font-weight:700;font-size:15px;color:var(--brand)}
+.pr s{display:block;color:var(--mut);font-weight:400;font-size:13px}
+.add{margin:6px auto 12px;background:var(--brand);color:#fff;border:0;border-radius:10px;padding:8px 28px;font:600 14px Poppins;cursor:pointer}
+.add:hover{background:var(--dark)}
+.tile{border:1px solid var(--line);border-radius:16px;overflow:hidden;text-align:center;background:#fff;cursor:pointer;padding:0;font:inherit;color:inherit}
+.tile .img{aspect-ratio:16/10;background:#1b1b1b center/cover;display:grid;place-items:center;font-size:48px}
+.tile b{display:block;font-size:15px;font-weight:600;padding:10px 4px;color:var(--ink)}
+.chips{position:sticky;top:58px;z-index:15;background:var(--bg);display:flex;gap:8px;overflow-x:auto;padding:12px 16px;margin:0 -16px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{background:#fff;color:var(--ink);cursor:pointer;font:600 14px Poppins;white-space:nowrap;padding:8px 16px;border-radius:99px;border:1px solid var(--line)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.about{background:var(--sand);margin-top:34px;padding:34px 0}
+.about .wrap{display:grid;gap:20px;grid-template-columns:1fr}
+.about .pic{aspect-ratio:16/10;border-radius:16px;background:#ddd center/cover;display:grid;place-items:center;font-size:70px}
+.about .wrap.solo{grid-template-columns:1fr;max-width:680px;text-align:center}
+.about h2{font-size:30px;margin-bottom:8px;color:var(--ink)}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gal div{aspect-ratio:1;border-radius:10px;background:#eee center/cover}
+footer{background:var(--dark);color:#fff;padding:28px 0 34px;text-align:center}
+.soc{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:18px 0 16px}
+.soc a{padding:10px 18px;border:1px solid #fff8;border-radius:99px;text-decoration:none;font:600 14px Poppins}
+.soc a:hover{background:#fff;border-color:#fff;color:var(--dark)}
+footer .logo{color:#fff}
+footer small{color:#bbb}
+.wa{position:fixed;right:14px;bottom:14px;z-index:30;background:#25d366;color:#fff;border-radius:99px;padding:12px 18px;font-weight:600;text-decoration:none;box-shadow:0 4px 14px #0005}
+#ov{position:fixed;inset:0;background:#0007;z-index:38;display:none}
+#ov.on{display:block}
+#drawer{position:fixed;inset:0 0 0 auto;width:min(420px,100%);background:#fff;z-index:40;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}
+#drawer.open{transform:none}
+#drawer .top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);color:var(--ink)}
+#items{flex:1;overflow:auto;padding:14px 16px}
+.fm label{display:block;font-weight:600;font-size:14px;margin-bottom:12px}
+.fm input{display:block;width:100%;margin-top:4px;padding:12px;border:1px solid #c5cad6;border-radius:10px;font:500 15px Poppins}
+.fh{font-size:15px;margin:10px 0 4px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-weight:500}
+.qty button{width:28px;height:28px;border-radius:50%;border:2px solid var(--brand);background:#fff;color:var(--brand);font-weight:700;cursor:pointer}
+.qty span{display:inline-block;min-width:24px;text-align:center}
+#foot{padding:16px;border-top:1px solid var(--line);display:grid;gap:10px}
+.tot{display:flex;justify-content:space-between;font-weight:700;font-size:18px}
+#dot{position:fixed;top:0;left:0;z-index:60;width:30px;height:30px;background:none;border:0;cursor:pointer}
+#dot::after{content:"";position:absolute;top:5px;left:5px;width:5px;height:5px;border-radius:50%;background:#888;opacity:.4}
+#ad{position:fixed;inset:0;z-index:70;background:#fff;overflow:auto;display:none}
+#ad.on{display:block}
+#adIn{max-width:640px;margin:0 auto;padding:16px 16px 40px}
+#adIn label{display:block;font-weight:600;font-size:14px;margin:8px 0}
+#adIn input,#adIn select{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #bbb;border-radius:8px;font:500 14px Poppins;background:#fff}
+.lg{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;margin:10px 0}
+.lb{width:64px;height:64px;border-radius:12px;background:#f3f3f3;display:grid;place-items:center;font-size:28px;color:#999;overflow:hidden;flex:none}
+.lb img{width:100%;height:100%;object-fit:contain}
+#adIn .ck input{display:inline-block;width:auto;margin:0 6px 0 0}
+.logo img{border-radius:8px}
+.at{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.at button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 14px;font:600 13px Poppins;cursor:pointer}
+.at button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.ar{border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;display:grid;gap:4px}
+.th{width:100%;max-height:130px;object-fit:cover;border-radius:8px}
+.del{justify-self:start;background:#fff;color:#b00020;border:1px solid #b00020;border-radius:8px;padding:6px 12px;font:600 13px Poppins;cursor:pointer;margin-top:6px}
+.an{background:#fff4d6;border-radius:8px;padding:8px 12px;font-size:13px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(4,1fr)}.about .wrap{grid-template-columns:1fr 1fr;align-items:center}.slide{aspect-ratio:16/5}}
+@media(prefers-reduced-motion:reduce){#drawer{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <button class="ib" onclick="$('nav').classList.toggle('on')" aria-label="Menu">&#9776;</button>
+  <a class="logo" href="#" onclick="goHome();return false" id="logo"></a>
+  <button class="ib cartI" onclick="toggleCart(true)" aria-label="Book now">&#128197;<i id="cnt">0</i></button>
+  <div id="nav"><a href="#" onclick="goHome('menu');return false">Explore the menu</a><a href="#" onclick="goHome('about');return false">About us</a><a href="#" onclick="goHome('contact');return false">Location</a></div>
+</header>
+
+<main id="top">
+<div id="home">
+<div class="order">
+  <h1 id="bizName"></h1>
+  <button class="btn" onclick="goMenu()">Book now</button>
+</div>
+
+<div class="car"><div class="slides" id="slides"></div><div class="dots" id="dots"></div></div>
+
+<div class="wrap">
+  <div id="menu"><div class="sh"><h2>Explore our menu</h2></div><div class="grid" id="tiles"></div></div>
+</div>
+
+<section class="about" id="about"><div class="wrap"><div class="pic" id="aboutPic"></div>
+<div><h2 id="aboutTitle"></h2><p id="aboutText"></p></div></div>
+<div class="wrap" id="galWrap"><div class="sh"><h2>Gallery</h2></div><div class="gal" id="gal"></div></div></section>
+</div>
+<div id="catPage" style="display:none"><div class="wrap">
+  <div class="chips" id="chips"></div>
+  <div class="sh"><h2 id="catName"></h2></div><div class="grid" id="grid"></div>
+  <p style="margin:26px 0 10px"><a href="#" onclick="goHome('menu');return false" style="font-weight:700">&larr; Back to all menus</a></p>
+</div></div>
+</main>
+
+<footer id="contact"><div class="wrap">
+  <div class="logo" style="justify-content:center;margin-bottom:12px" id="flogo"></div>
+  <div class="soc" id="soc"></div>
+  <small id="copy"></small>
+</div></footer>
+<button id="dot" onclick="adOpen()" aria-label="Admin dashboard"></button>
+<div id="ad"><div id="adIn"></div></div>
+<a class="wa" id="waFloat" target="_blank" rel="noopener">WhatsApp us</a>
+
+<div id="ov" onclick="closeAll()"></div>
+
+<aside id="drawer" aria-label="Book now">
+  <div class="top"><h2 style="font-size:24px">Book now</h2><button class="ib" onclick="toggleCart(false)">Close</button></div>
+  <div id="items">
+    <div class="fm">
+      <label>Your name<input id="cName" autocomplete="name"></label>
+      <label>Date<input id="cDate" type="date"></label>
+      <label>Time<input id="cTime" type="time"></label>
+    </div>
+    <h3 class="fh">Food to have ready (optional)</h3><div id="list"></div>
+  </div>
+  <div id="foot"><div class="tot" id="totRow"><span>Total</span><span id="total"></span></div>
+  <button class="btn" onclick="sendBooking()">Send booking on WhatsApp</button></div>
+</aside>
+
+<script>
+/* =====================================================
+   EDIT THIS BLOCK FOR EACH CLIENT. Nothing else needs changing.
+   Put the client's photos in an "images" folder next to this file.
+   Leave any image as "" to show a placeholder.
+   ===================================================== */
+const SITE = {
+  name: "Your Restaurant Name",
+  logo: "",                        // the business logo (easiest: upload it in the dashboard)
+  showName: true,                  // show the name next to the logo
+  color: "#e4002b",                // main brand colour (logo, buttons)
+  accent: "#e4002b",               // Book now button colour (can differ from the main colour)
+  whatsapp: "233541109016",        // international format, no + or spaces
+  address: "Main Street, Your Town",
+  currency: "GHS ",
+  banners: [                       // big sliding banners at the top
+    { img: "", bg: "#111", title: "Wow Deal", text: "Chicken, chips and a drink for GH₵35" },
+    { img: "", bg: "#7a0016", title: "New: Family Bucket", text: "Feeds four. Order today" },
+    { img: "", bg: "#222", title: "We deliver", text: "Hot to your door" }
+  ],
+  menu: [
+    { cat: "Food", img: "", emoji: "🍛", items: [
+      { name: "Jollof Rice & Chicken", desc: "", price: 70, img: "", emoji: "🍛" },
+      { name: "Fried Rice & Chicken", desc: "", price: 70, img: "", emoji: "🍛" },
+      { name: "Assorted Fried Rice", desc: "", price: 80, img: "", emoji: "🍛" },
+      { name: "Assorted Jollof Rice", desc: "", price: 80, img: "", emoji: "🍛" },
+      { name: "Chicken Pieces with Fried Rice", desc: "", price: 70, img: "", emoji: "🍗" },
+      { name: "Chicken Pieces with Jollof Rice", desc: "", price: 70, img: "", emoji: "🍗" },
+      { name: "Potato Chips with Chicken", desc: "", price: 70, img: "", emoji: "🍟" },
+      { name: "Potato Chips Only", desc: "", price: 40, img: "", emoji: "🍟" },
+      { name: "Fried Rice & Chicken Wings", desc: "", price: 80, img: "", emoji: "🍗" },
+      { name: "Jollof Rice & Chicken Wings", desc: "", price: 80, img: "", emoji: "🍗" },
+      { name: "Potatoes with Chicken Wings", desc: "", price: 70, img: "", emoji: "🍗" },
+      { name: "Rice with Fish", desc: "", price: 80, img: "", emoji: "🐟" },
+      { name: "Chicken Wings", desc: "", price: 45, img: "", emoji: "🍗" },
+      { name: "Samosa", desc: "", price: 30, img: "", emoji: "🥟" },
+      { name: "Spring Roll", desc: "", price: 30, img: "", emoji: "🥟" },
+      { name: "Banku with Tilapia", desc: "", price: 80, img: "", emoji: "🐟" },
+      { name: "Shawarma with Chips", desc: "", price: 60, img: "", emoji: "🌯" },
+      { name: "Assorted Spaghetti", desc: "", price: 50, img: "", emoji: "🍝" },
+      { name: "Assorted Indomie", desc: "", price: 60, img: "", emoji: "🍜" } ]},
+    { cat: "Large Pizza", img: "", emoji: "🍕", items: [
+      { name: "Chicken Pizza (Large)", desc: "Large size", price: 140, img: "", emoji: "🍕" },
+      { name: "Beef Pizza (Large)", desc: "Large size", price: 140, img: "", emoji: "🍕" },
+      { name: "Sausage & Chicken Pizza (Large)", desc: "Large size", price: 145, img: "", emoji: "🍕" },
+      { name: "Beef & Sausage Pizza (Large)", desc: "Large size", price: 145, img: "", emoji: "🍕" },
+      { name: "Tuna Pizza (Large)", desc: "Large size", price: 140, img: "", emoji: "🍕" },
+      { name: "Vegetable Pizza (Large)", desc: "Large size", price: 130, img: "", emoji: "🍕" },
+      { name: "Sausage Pizza (Large)", desc: "Large size", price: 130, img: "", emoji: "🍕" },
+      { name: "All Season Pizza (Large)", desc: "Large size", price: 150, img: "", emoji: "🍕" } ]},
+    { cat: "Medium Pizza", img: "", emoji: "🍕", items: [
+      { name: "Beef Pizza (Medium)", desc: "Medium size", price: 120, img: "", emoji: "🍕" },
+      { name: "Chicken Pizza (Medium)", desc: "Medium size", price: 120, img: "", emoji: "🍕" },
+      { name: "All Season Pizza (Medium)", desc: "Medium size", price: 130, img: "", emoji: "🍕" } ]},
+    { cat: "Small Pizza", img: "", emoji: "🍕", items: [
+      { name: "Beef Pizza (Small)", desc: "Small size", price: 70, img: "", emoji: "🍕" },
+      { name: "Chicken Pizza (Small)", desc: "Small size", price: 70, img: "", emoji: "🍕" },
+      { name: "All Season Pizza (Small)", desc: "Small size", price: 80, img: "", emoji: "🍕" } ]},
+    { cat: "Family Pizza", img: "", emoji: "🍕", items: [
+      { name: "Chicken Pizza (Family)", desc: "Family size", price: 180, img: "", emoji: "🍕" },
+      { name: "Beef Pizza (Family)", desc: "Family size", price: 180, img: "", emoji: "🍕" },
+      { name: "All Season Pizza (Family)", desc: "Family size", price: 190, img: "", emoji: "🍕" },
+      { name: "Extra Cheese (add-on)", desc: "Add to any pizza", price: 20, img: "", emoji: "🧀" } ]}
+  ],
+  aboutTitle: "About us",
+  about: "We serve freshly prepared meals made with quality ingredients in a warm and welcoming space. Whether it is a quick bite, a family meal or a special occasion, book your date and time and we will have everything ready for you.",
+  aboutImage: "",                  // optional photo; if empty, About us shows text only
+  gallery: [],                     // e.g. ["images/g1.jpg","images/g2.jpg"]
+  location: "",                    // Google Maps link (optional; if empty, it searches the address above)
+  social: { tiktok:"", facebook:"", snapchat:"", instagram:"" }  // paste each full link; left empty, the button still shows but does nothing
+};
+/* ===================== END OF CLIENT SETTINGS ===================== */
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=id=>document.getElementById(id), money=n=>SITE.currency+(n%1?n.toFixed(2):n);
+const bg=u=>u?`style="background-image:url('${u}')"`:"";
+document.documentElement.style.setProperty("--brand",SITE.color);document.documentElement.style.setProperty("--accent",SITE.accent);
+function fb(){document.querySelectorAll("[data-img]:not([data-ck])").forEach(el=>{el.dataset.ck=1;const im=new Image();im.onerror=()=>{el.style.backgroundImage="none";if(el.dataset.bi!==undefined){const b=SITE.banners[el.dataset.bi];el.innerHTML=`<h2>${esc(b.title||SITE.name)}</h2><p>${esc(b.text)}</p>`}else el.textContent=el.dataset.e||"🍽️"};im.src=el.dataset.img})}
+let si=0; const sl=$("slides");
+function dots(){[...$("dots").children].forEach((d,i)=>d.classList.toggle("on",i==si))}
+sl.addEventListener("scroll",()=>{si=Math.round(sl.scrollLeft/sl.clientWidth);dots()});
+if(!matchMedia("(prefers-reduced-motion:reduce)").matches)setInterval(()=>{si=(si+1)%(SITE.banners.length||1);sl.scrollTo({left:si*sl.clientWidth,behavior:"smooth"})},4500);
+dots();
+$("aboutTitle").textContent=SITE.aboutTitle; $("aboutText").textContent=SITE.about;
+const ap=$("aboutPic"); if(SITE.aboutImage) ap.style.backgroundImage=`url('${SITE.aboutImage}')`; else {ap.parentElement.classList.add("solo");ap.remove();}
+if(SITE.gallery.length)$("gal").innerHTML=SITE.gallery.map(g=>`<div ${bg(g)}></div>`).join(""); else $("galWrap").remove();
+const wa="https://wa.me/"+SITE.whatsapp; $("waFloat").href=wa;
+const links=[["Location",SITE.location||("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(SITE.address))],["TikTok",SITE.social.tiktok],["Facebook",SITE.social.facebook],["Snapchat",SITE.social.snapchat],["Instagram",SITE.social.instagram]];
+$("soc").innerHTML=links.map(l=>l[1]?`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`:`<a href="#" onclick="return false">${l[0]}</a>`).join("");
+$("cDate").min=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+
+const all=[]; let active=0, cart={};
+const cardH=it=>`<article class="card"><div class="img" ${bg(it.img)} ${it.img?`data-img="${it.img}" data-e="${it.emoji||"🍽️"}"`:""}>${it.img?"":it.emoji||"🍽️"}</div><h3>${esc(it.name)}</h3><p>${esc(it.desc)}</p>
+ <div class="pr">${it.old?`<s>${money(it.old)}</s>`:""}${money(it.price)}</div><button class="add" onclick="add('${it.id}')" aria-label="Add ${esc(it.name)}">Add</button></article>`;
+function menu(){
+  $("tiles").innerHTML=SITE.menu.map((c,i)=>`<button class="tile" onclick="openCat(${i})"><div class="img" ${bg(c.img)} ${c.img?`data-img="${c.img}" data-e="${c.emoji||"🍽️"}"`:""}>${c.img?"":c.emoji||"🍽️"}</div><b>${esc(c.cat)}</b></button>`).join("");
+  fb();
+}
+function showCat(i){
+  $("chips").innerHTML=SITE.menu.map((c,k)=>`<button class="chip ${k==i?"on":""}" onclick="openCat(${k})">${esc(c.cat)}</button>`).join("");
+  $("catName").textContent=SITE.menu[i].cat;
+  $("grid").innerHTML=SITE.menu[i].items.map(cardH).join("");fb();
+  const on=$("chips").querySelector(".on"); if(on)$("chips").scrollLeft=on.offsetLeft-16;
+}
+function view(i){
+  $("nav").classList.remove("on");$("chips").style.top=document.querySelector("header").offsetHeight+"px";
+  if(i===null||i===undefined){$("catPage").style.display="none";$("home").style.display="block";return}
+  showCat(i);$("home").style.display="none";$("catPage").style.display="block";scrollTo(0,0);
+}
+function openCat(i){view(i);try{history.pushState({c:i},"")}catch(e){}}
+function goHome(id){
+  view(null);try{history.pushState({c:null},"")}catch(e){}
+  const t=id?$(id):null; if(t)t.scrollIntoView(); else scrollTo(0,0);
+}
+function goMenu(){$("menu").scrollIntoView({behavior:"smooth"})}
+addEventListener("popstate",e=>{const c=e.state?e.state.c:null;view(c);if(c==null)scrollTo(0,0)});
+function add(id){cart[id]=(cart[id]||0)+1;draw();}
+function chg(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];draw();}
+function draw(){
+  const ids=Object.keys(cart); let t=0,n=0;
+  $("list").innerHTML=ids.length?ids.map(id=>{const it=all.find(x=>x.id==id);t+=it.price*cart[id];n+=cart[id];
+   return `<div class="li"><span>${esc(it.name)}<br><small>${money(it.price)}</small></span><span class="qty"><button onclick="chg('${id}',-1)">-</button><span>${cart[id]}</span><button onclick="chg('${id}',1)">+</button></span></div>`}).join(""):"<p style='color:#777;font-size:14px'>Nothing added. You can add food from the menu, or just book.</p>";
+  $("total").textContent=money(t); $("totRow").style.display=n?"flex":"none";
+  $("cnt").textContent=n; $("cnt").style.display=n?"":"none";
+}
+function closeAll(){toggleCart(false)}
+function toggleCart(o){$("drawer").classList.toggle("open",o);$("ov").classList.toggle("on",o)}
+function sendBooking(){
+  const name=$("cName").value.trim(), d=$("cDate").value, tm=$("cTime").value;
+  if(!name){alert("Please enter your name.");return}
+  if(!d){alert("Please choose a date.");return}
+  if(!tm){alert("Please choose a time.");return}
+  const dt=new Date(d+"T"+tm); if(dt<new Date()){alert("Please choose a date and time in the future.");return}
+  let m="New booking for "+SITE.name+"\n\nName: "+name+"\nDate: "+dt.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"})+"\nTime: "+dt.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+  const ids=Object.keys(cart);
+  if(ids.length){let t=0;m+="\n\nFood to have ready:\n";ids.forEach(id=>{const it=all.find(x=>x.id==id);t+=it.price*cart[id];m+=`${cart[id]} x ${it.name} (${money(it.price*cart[id])})\n`});m+="Total: "+money(t)}
+  window.open(wa+"?text="+encodeURIComponent(m),"_blank");
+}
+function paint(){
+  document.title=SITE.name+" | Menu and Orders";
+  const logoH=(SITE.logo?`<img src="${esc(SITE.logo)}" alt="${SITE.showName===false?esc(SITE.name):""}">`:"")+(SITE.logo&&SITE.showName===false?"":esc(SITE.name));
+  $("logo").innerHTML=logoH; $("flogo").innerHTML=logoH;
+  $("slides").innerHTML=SITE.banners.map((b,i)=>`<div class="slide" style="background-color:${b.bg||"#222"}${b.img?`;background-image:url('${b.img}')`:""}" ${b.img?`data-img="${b.img}" data-bi="${i}"`:""}>${b.img?"":`<h2>${esc(b.title)}</h2><p>${esc(b.text)}</p>`}</div>`).join("");
+  $("dots").innerHTML=SITE.banners.map(()=>"<i></i>").join("");
+  fb(); si=0; sl.scrollLeft=0; dots();
+  $("bizName").textContent=SITE.name;
+  $("copy").textContent="© "+new Date().getFullYear()+" "+SITE.name+". All rights reserved.";
+  all.length=0; cart={};
+  SITE.menu.forEach((c,ci)=>c.items.forEach((it,ii)=>{it.id=ci+"-"+ii;all.push(it)}));
+  menu(); draw();
+}
+/* ---------- Dashboard: tiny dot at the top-left opens it ---------- */
+const BUILD="2026-11-08b", API="/api/site"; let backend=false, pw="", D=null, tab="name", sub=0;
+const H=()=>({"content-type":"application/json","x-admin-password":pw});
+const clone=o=>JSON.parse(JSON.stringify(o,(k,v)=>k==="id"?undefined:v));
+async function loadCfg(){
+  let c=null;
+  try{const r=await fetch(API,{cache:"no-store"});if(r.ok&&(r.headers.get("content-type")||"").includes("json")){backend=true;c=await r.json()}}catch(e){}
+  if(!backend){try{c=JSON.parse(localStorage.getItem("siteCfg")||"null");if(c&&c.v!==BUILD)c=null}catch(e){}}
+  if(c&&c.name){SITE.logo=c.logo||"";SITE.showName=c.showName!==false;SITE.name=c.name;if(c.banners)SITE.banners=c.banners;if(c.menu)SITE.menu=c.menu;paint();view(null)}
+}
+function adOpen(){
+  $("ad").classList.add("on");
+  if(backend&&!pw){$("adIn").innerHTML=`<h2>Dashboard login</h2><label>Password<input id="adPw" type="password"></label><button class="btn" style="margin-top:14px" onclick="adLogin()">Enter</button><p style="text-align:center;margin-top:12px"><button class="ib" onclick="adClose()">Cancel</button></p>`;return}
+  D=pend||clone({name:SITE.name,logo:SITE.logo||"",showName:SITE.showName!==false,banners:SITE.banners,menu:SITE.menu});if(!pend){tab="name";sub=0}pend=null;adDraw();
+}
+function adClose(){$("ad").classList.remove("on");try{sessionStorage.removeItem("adDraft")}catch(e){}}
+async function adLogin(){
+  const p=$("adPw").value;
+  try{const r=await fetch(API,{method:"POST",headers:{"content-type":"application/json","x-admin-password":p},body:JSON.stringify({check:1})});if(!r.ok)throw 0;pw=p;adOpen()}
+  catch(e){alert("Wrong password.")}
+}
+function adMsg(t){const e=$("adMsg");if(e){e.textContent=t;e.style.display=t?"block":"none"}}
+async function upImg(inp,cb,opt){
+  const f=inp.files&&inp.files[0]; if(!f)return;
+  adMsg("Reading your picture, please wait...");
+  try{
+    let src;
+    try{const bm=await createImageBitmap(f,{imageOrientation:"from-image"});src={w:bm.width,h:bm.height,d:bm}}
+    catch(e){const u=URL.createObjectURL(f);src=await new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok({w:im.naturalWidth,h:im.naturalHeight,d:im});im.onerror=no;im.src=u})}
+    const k=Math.min(1,(opt=="logo"?300:900)/Math.max(src.w,src.h)),c=document.createElement("canvas");c.width=Math.round(src.w*k);c.height=Math.round(src.h*k);
+    c.getContext("2d").drawImage(src.d,0,0,c.width,c.height);
+    const d=opt=="logo"?c.toDataURL("image/png"):c.toDataURL("image/jpeg",.8);
+    if(!backend){cb(d);return}
+    const x=await fetch(API,{method:"POST",headers:H(),body:JSON.stringify({image:d})});if(!x.ok)throw 1;
+    cb((await x.json()).url);
+  }catch(e){adMsg("Could not use that picture. Please try a different photo.")}
+  try{inp.value=""}catch(e){}
+}
+function draft(){try{sessionStorage.setItem("adDraft",JSON.stringify({D,tab,sub}))}catch(e){}}
+let pend=null;
+async function restoreDraft(){
+  let d=null;try{d=JSON.parse(sessionStorage.getItem("adDraft")||"null")}catch(e){}
+  if(d&&d.D){pend=d.D;tab=d.tab||"name";sub=d.sub||0;adOpen()}
+}
+function adDraw(){
+  const th=u=>u?`<img class="th" src="${esc(u)}" alt="">`:"";
+  const up=(js)=>`<input type="file" accept="image/*" onchange="upImg(this,v=>{${js};adDraw()})">`;
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center"><h2>Dashboard</h2><button class="ib" onclick="adClose()">Close</button></div>`;
+  h+=`<p id="adMsg" class="an" style="display:none"></p>`;
+  if(!/^https?:$/.test(location.protocol))h+=`<p class="an" style="background:#ffe3e3">Picture upload may not work when the site is opened from the Files app or Downloads. Put the site online first (for example on Netlify) and open its web link.</p>`;
+  if(!backend)h+=`<p class="an">Demo mode: changes are saved only in this browser.</p>`;
+  h+=`<div class="lg"><div class="lb">${D.logo?`<img src="${esc(D.logo)}" alt="Logo">`:"+"}</div><div><b>Business logo</b><label>${D.logo?"Change logo":"Upload logo"}<input type="file" accept="image/*" onchange="upImg(this,v=>{D.logo=v;adDraw()},'logo')"></label>${D.logo?`<button class="del" onclick="D.logo='';adDraw()">Remove logo</button>`:""}<label class="ck"><input type="checkbox" ${D.showName!==false?"checked":""} onchange="D.showName=this.checked;draft()"> Show name next to logo</label></div></div>`;
+  h+=`<div class="at">`+[["name","Name"],["ban","Sliding box"],["menu","Main menu"],["sub","Sub menu"]].map(t=>`<button class="${tab==t[0]?"on":""}" onclick="tab='${t[0]}';adDraw()">${t[1]}</button>`).join("")+`</div>`;
+  if(tab=="name")h+=`<label>Website name<input value="${esc(D.name)}" oninput="D.name=this.value"></label>`;
+  if(tab=="ban"){
+    h+=D.banners.map((b,i)=>`<div class="ar">${th(b.img)}${b.img?"":`<b>${esc(b.title)||"Text banner"}</b>`}<label>${b.img?"Replace picture":"Add a picture"}${up(`D.banners[${i}].img=v`)}</label><button class="del" onclick="D.banners.splice(${i},1);adDraw()">Delete</button></div>`).join("");
+    h+=`<div class="ar"><label>Add a new picture${up(`D.banners.push({img:v,bg:'#111',title:'',text:''})`)}</label></div>`;
+  }
+  if(tab=="menu"){
+    h+=D.menu.map((c,i)=>`<div class="ar">${th(c.img)}<label>Menu name<input value="${esc(c.cat)}" oninput="D.menu[${i}].cat=this.value"></label><label>Picture${up(`D.menu[${i}].img=v`)}</label><button class="del" onclick="if(confirm('Delete this menu and all its items?')){D.menu.splice(${i},1);sub=0;adDraw()}">Delete menu</button></div>`).join("");
+    h+=`<button class="add" style="margin:10px 0" onclick="D.menu.push({cat:'New menu',img:'',emoji:'🍽️',items:[]});adDraw()">+ Add main menu</button>`;
+  }
+  if(tab=="sub"){
+    if(!D.menu.length)h+=`<p>Add a main menu first.</p>`;
+    else{
+      if(sub>=D.menu.length)sub=0;
+      h+=`<label>Main menu<select onchange="sub=+this.value;adDraw()">${D.menu.map((c,i)=>`<option value="${i}" ${i==sub?"selected":""}>${esc(c.cat)}</option>`).join("")}</select></label>`;
+      h+=D.menu[sub].items.map((it,j)=>`<div class="ar">${th(it.img)}<label>Name<input value="${esc(it.name)}" oninput="D.menu[${sub}].items[${j}].name=this.value"></label><label>Price<input type="number" step="any" value="${esc(it.price)}" oninput="D.menu[${sub}].items[${j}].price=+this.value||0"></label><label>Description (optional)<input value="${esc(it.desc)}" oninput="D.menu[${sub}].items[${j}].desc=this.value"></label><label>Picture${up(`D.menu[${sub}].items[${j}].img=v`)}</label><button class="del" onclick="D.menu[${sub}].items.splice(${j},1);adDraw()">Delete item</button></div>`).join("");
+      h+=`<button class="add" style="margin:10px 0" onclick="D.menu[${sub}].items.push({name:'New item',desc:'',price:0,img:'',emoji:D.menu[${sub}].emoji||'🍽️'});adDraw()">+ Add item</button>`;
+    }
+  }
+  $("adIn").innerHTML=h+`<button class="btn" style="margin-top:18px" onclick="adSave()">Save changes</button>`+(backend?"":`<p style="text-align:center;margin-top:16px"><button class="del" onclick="if(confirm('Remove all saved changes and go back to the original?')){localStorage.removeItem('siteCfg');sessionStorage.removeItem('adDraft');location.reload()}">Reset to original</button></p>`);draft();
+}
+async function adSave(){
+  const c=clone(D);
+  try{
+    if(backend){const r=await fetch(API,{method:"POST",headers:H(),body:JSON.stringify({config:c})});if(!r.ok)throw 0}
+    else localStorage.setItem("siteCfg",JSON.stringify({...c,v:BUILD}));
+  }catch(e){alert("Could not save"+(backend?". Please log in again.":". Browser storage may be full: use smaller or fewer pictures."));if(backend)pw="";return}
+  SITE.name=c.name;SITE.logo=c.logo||"";SITE.showName=c.showName!==false;SITE.banners=c.banners;SITE.menu=c.menu;paint();view(null);adClose();scrollTo(0,0);alert("Saved. Your changes are now on the website.");
+}
+paint();view(null);$("adIn").addEventListener("input",draft);loadCfg().then(restoreDraft);
+</script>
+</body>
+</html>
