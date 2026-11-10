@@ -45,7 +45,7 @@ export default async (req) => {
   if (body.config && typeof body.config === "object") {
     const c = body.config;
     if (typeof c.name !== "string" || !Array.isArray(c.banners) || !Array.isArray(c.menu)) return new Response("Bad config", { status: 400 });
-    const json = JSON.stringify({ name: c.name, logo: typeof c.logo === "string" ? c.logo : "", showName: c.showName !== false, banners: c.banners, menu: c.menu });
+    const json = JSON.stringify({ name: c.name, logo: typeof c.logo === "string" ? c.logo : "", showName: c.showName !== false, about: typeof c.about === "string" ? c.about.slice(0, 3000) : "", whatsapp: String(c.whatsapp || "").replace(/\D/g, "").slice(0, 20), banners: c.banners, menu: c.menu });
     if (json.length > 900_000) return new Response("Config too large", { status: 413 });
     await store.set("config", json);
     return Response.json({ ok: true });
