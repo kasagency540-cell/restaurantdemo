@@ -86,13 +86,16 @@ footer small{color:#bbb}
 .qty span{display:inline-block;min-width:24px;text-align:center}
 #foot{padding:16px;border-top:1px solid var(--line);display:grid;gap:10px}
 .tot{display:flex;justify-content:space-between;font-weight:700;font-size:18px}
+body.ld main,body.ld footer,body.ld header>*{visibility:hidden}
+body.ld::after{content:"";position:fixed;top:45%;left:50%;width:34px;height:34px;margin:-17px;border:4px solid #ddd;border-top-color:var(--brand);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
 #dot{position:fixed;top:0;left:0;z-index:60;width:30px;height:30px;background:none;border:0;cursor:pointer}
 #dot::after{content:"";position:absolute;top:5px;left:5px;width:5px;height:5px;border-radius:50%;background:#888;opacity:.4}
 #ad{position:fixed;inset:0;z-index:70;background:#fff;overflow:auto;display:none}
 #ad.on{display:block}
 #adIn{max-width:640px;margin:0 auto;padding:16px 16px 40px}
 #adIn label{display:block;font-weight:600;font-size:14px;margin:8px 0}
-#adIn input,#adIn select{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #bbb;border-radius:8px;font:500 14px Poppins;background:#fff}
+#adIn input,#adIn select,#adIn textarea{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #bbb;border-radius:8px;font:500 14px Poppins;background:#fff}
 .lg{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;margin:10px 0}
 .lb{width:64px;height:64px;border-radius:12px;background:#f3f3f3;display:grid;place-items:center;font-size:28px;color:#999;overflow:hidden;flex:none}
 .lb img{width:100%;height:100%;object-fit:contain}
@@ -249,10 +252,10 @@ function dots(){[...$("dots").children].forEach((d,i)=>d.classList.toggle("on",i
 sl.addEventListener("scroll",()=>{si=Math.round(sl.scrollLeft/sl.clientWidth);dots()});
 if(!matchMedia("(prefers-reduced-motion:reduce)").matches)setInterval(()=>{si=(si+1)%(SITE.banners.length||1);sl.scrollTo({left:si*sl.clientWidth,behavior:"smooth"})},4500);
 dots();
-$("aboutTitle").textContent=SITE.aboutTitle; $("aboutText").textContent=SITE.about;
+$("aboutTitle").textContent=SITE.aboutTitle;
 const ap=$("aboutPic"); if(SITE.aboutImage) ap.style.backgroundImage=`url('${SITE.aboutImage}')`; else {ap.parentElement.classList.add("solo");ap.remove();}
 if(SITE.gallery.length)$("gal").innerHTML=SITE.gallery.map(g=>`<div ${bg(g)}></div>`).join(""); else $("galWrap").remove();
-const wa="https://wa.me/"+SITE.whatsapp; $("waFloat").href=wa;
+let wa="";
 const links=[["Location",SITE.location||("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(SITE.address))],["TikTok",SITE.social.tiktok],["Facebook",SITE.social.facebook],["Snapchat",SITE.social.snapchat],["Instagram",SITE.social.instagram]];
 $("soc").innerHTML=links.map(l=>l[1]?`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`:`<a href="#" onclick="return false">${l[0]}</a>`).join("");
 $("cDate").min=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
@@ -271,6 +274,7 @@ function showCat(i){
   const on=$("chips").querySelector(".on"); if(on)$("chips").scrollLeft=on.offsetLeft-16;
 }
 function view(i){
+  curCat=(i===undefined?null:i);
   $("nav").classList.remove("on");$("chips").style.top=document.querySelector("header").offsetHeight+"px";
   if(i===null||i===undefined){$("catPage").style.display="none";$("home").style.display="block";return}
   showCat(i);$("home").style.display="none";$("catPage").style.display="block";scrollTo(0,0);
@@ -312,6 +316,8 @@ function paint(){
   $("dots").innerHTML=SITE.banners.map(()=>"<i></i>").join("");
   fb(); si=0; sl.scrollLeft=0; dots();
   $("bizName").textContent=SITE.name;
+  $("aboutText").textContent=SITE.about;
+  wa="https://wa.me/"+SITE.whatsapp; $("waFloat").href=wa;
   $("copy").textContent="© "+new Date().getFullYear()+" "+SITE.name+". All rights reserved.";
   all.length=0; cart={};
   SITE.menu.forEach((c,ci)=>c.items.forEach((it,ii)=>{it.id=ci+"-"+ii;all.push(it)}));
@@ -321,16 +327,30 @@ function paint(){
 const BUILD="2026-11-08b", API="/api/site"; let backend=false, pw="", D=null, tab="name", sub=0;
 const H=()=>({"content-type":"application/json","x-admin-password":pw});
 const clone=o=>JSON.parse(JSON.stringify(o,(k,v)=>k==="id"?undefined:v));
+let curCat=null;
+function readLS(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
+function applyCfg(c){
+  if(!c||!c.name)return false;
+  SITE.name=c.name;SITE.logo=c.logo||"";SITE.showName=c.showName!==false;
+  if(c.banners)SITE.banners=c.banners;if(c.menu)SITE.menu=c.menu;
+  if(c.about)SITE.about=c.about;if(c.whatsapp)SITE.whatsapp=c.whatsapp;
+  return true;
+}
+function repaint(){paint();if(curCat!==null&&SITE.menu[curCat])showCat(curCat)}
 async function loadCfg(){
   let c=null;
   try{const r=await fetch(API,{cache:"no-store"});if(r.ok&&(r.headers.get("content-type")||"").includes("json")){backend=true;c=await r.json()}}catch(e){}
-  if(!backend){try{c=JSON.parse(localStorage.getItem("siteCfg")||"null");if(c&&c.v!==BUILD)c=null}catch(e){}}
-  if(c&&c.name){SITE.logo=c.logo||"";SITE.showName=c.showName!==false;SITE.name=c.name;if(c.banners)SITE.banners=c.banners;if(c.menu)SITE.menu=c.menu;paint();view(null)}
+  document.body.classList.remove("ld");
+  if(!backend)return;
+  const j=JSON.stringify(c||{});
+  try{if(c&&c.name)localStorage.setItem("siteCache",j);else localStorage.removeItem("siteCache")}catch(e){}
+  if(j!==cachedKey&&applyCfg(c))repaint();
 }
+const waNum=v=>{let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("0"))d="233"+d.slice(1);return d};
 function adOpen(){
   $("ad").classList.add("on");
   if(backend&&!pw){$("adIn").innerHTML=`<h2>Dashboard login</h2><label>Password<input id="adPw" type="password"></label><button class="btn" style="margin-top:14px" onclick="adLogin()">Enter</button><p style="text-align:center;margin-top:12px"><button class="ib" onclick="adClose()">Cancel</button></p>`;return}
-  D=pend||clone({name:SITE.name,logo:SITE.logo||"",showName:SITE.showName!==false,banners:SITE.banners,menu:SITE.menu});if(!pend){tab="name";sub=0}pend=null;adDraw();
+  D=pend||clone({name:SITE.name,logo:SITE.logo||"",showName:SITE.showName!==false,about:SITE.about,whatsapp:SITE.whatsapp,banners:SITE.banners,menu:SITE.menu});if(!pend){tab="name";sub=0}pend=null;adDraw();
 }
 function adClose(){$("ad").classList.remove("on");try{sessionStorage.removeItem("adDraft")}catch(e){}}
 async function adLogin(){
@@ -369,7 +389,9 @@ function adDraw(){
   if(!/^https?:$/.test(location.protocol))h+=`<p class="an" style="background:#ffe3e3">Picture upload may not work when the site is opened from the Files app or Downloads. Put the site online first (for example on Netlify) and open its web link.</p>`;
   if(!backend)h+=`<p class="an">Demo mode: changes are saved only in this browser.</p>`;
   h+=`<div class="lg"><div class="lb">${D.logo?`<img src="${esc(D.logo)}" alt="Logo">`:"+"}</div><div><b>Business logo</b><label>${D.logo?"Change logo":"Upload logo"}<input type="file" accept="image/*" onchange="upImg(this,v=>{D.logo=v;adDraw()},'logo')"></label>${D.logo?`<button class="del" onclick="D.logo='';adDraw()">Remove logo</button>`:""}<label class="ck"><input type="checkbox" ${D.showName!==false?"checked":""} onchange="D.showName=this.checked;draft()"> Show name next to logo</label></div></div>`;
-  h+=`<div class="at">`+[["name","Name"],["ban","Sliding box"],["menu","Main menu"],["sub","Sub menu"]].map(t=>`<button class="${tab==t[0]?"on":""}" onclick="tab='${t[0]}';adDraw()">${t[1]}</button>`).join("")+`</div>`;
+  h+=`<div class="at">`+[["name","Name"],["about","About us"],["wa","WhatsApp"],["ban","Sliding box"],["menu","Main menu"],["sub","Sub menu"]].map(t=>`<button class="${tab==t[0]?"on":""}" onclick="tab='${t[0]}';adDraw()">${t[1]}</button>`).join("")+`</div>`;
+  if(tab=="about")h+=`<label>About us text (shown at the bottom of the website)<textarea rows="9" oninput="D.about=this.value">${esc(D.about)}</textarea></label>`;
+  if(tab=="wa")h+=`<label>WhatsApp number for bookings<input type="tel" value="${esc(D.whatsapp)}" oninput="D.whatsapp=this.value;$('waHint').textContent='Bookings will go to: +'+waNum(this.value)"></label><p id="waHint" class="an">Bookings will go to: +${esc(waNum(D.whatsapp))}</p><p style="font-size:13px;color:#666">Type it the normal way, like 054 110 9016. It is turned into international format automatically (Ghana, +233).</p>`;
   if(tab=="name")h+=`<label>Website name<input value="${esc(D.name)}" oninput="D.name=this.value"></label>`;
   if(tab=="ban"){
     h+=D.banners.map((b,i)=>`<div class="ar">${th(b.img)}${b.img?"":`<b>${esc(b.title)||"Text banner"}</b>`}<label>${b.img?"Replace picture":"Add a picture"}${up(`D.banners[${i}].img=v`)}</label><button class="del" onclick="D.banners.splice(${i},1);adDraw()">Delete</button></div>`).join("");
@@ -392,12 +414,19 @@ function adDraw(){
 }
 async function adSave(){
   const c=clone(D);
+  c.whatsapp=waNum(c.whatsapp);
+  if(c.whatsapp.length<11){alert("Please enter a valid WhatsApp number, for example 054 110 9016.");tab="wa";adDraw();return}
   try{
     if(backend){const r=await fetch(API,{method:"POST",headers:H(),body:JSON.stringify({config:c})});if(!r.ok)throw 0}
     else localStorage.setItem("siteCfg",JSON.stringify({...c,v:BUILD}));
   }catch(e){alert("Could not save"+(backend?". Please log in again.":". Browser storage may be full: use smaller or fewer pictures."));if(backend)pw="";return}
-  SITE.name=c.name;SITE.logo=c.logo||"";SITE.showName=c.showName!==false;SITE.banners=c.banners;SITE.menu=c.menu;paint();view(null);adClose();scrollTo(0,0);alert("Saved. Your changes are now on the website.");
+  SITE.name=c.name;SITE.logo=c.logo||"";SITE.showName=c.showName!==false;SITE.about=c.about;SITE.whatsapp=c.whatsapp;SITE.banners=c.banners;SITE.menu=c.menu;if(backend){try{localStorage.setItem("siteCache",JSON.stringify(c))}catch(e){}}paint();view(null);adClose();scrollTo(0,0);alert("Saved. Your changes are now on the website.");
 }
+let cachedKey="";try{cachedKey=localStorage.getItem("siteCache")||""}catch(e){}
+let pre=null;try{pre=JSON.parse(cachedKey||"null")}catch(e){}
+if(!pre){const d=readLS("siteCfg");if(d&&d.v===BUILD)pre=d}
+if(!applyCfg(pre))document.body.classList.add("ld");
+setTimeout(()=>document.body.classList.remove("ld"),3000);
 paint();view(null);$("adIn").addEventListener("input",draft);loadCfg().then(restoreDraft);
 </script>
 </body>
